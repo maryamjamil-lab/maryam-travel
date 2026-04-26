@@ -1,0 +1,157 @@
+
+
+.main-footer {
+  background: #111;
+  color: white;
+  padding: 70px 8% 20px;
+}
+
+.footer-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.5fr;
+  gap: 40px;
+  margin-bottom: 50px;
+}
+
+.footer-brand h2 {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0 0 14px;
+  color: #fff;
+}
+
+.footer-brand h2 span {
+  color: #2A52BE;
+}
+
+.footer-brand p {
+  color: #aaa;
+  font-size: 14px;
+  line-height: 1.7;
+  max-width: 280px;
+}
+
+.social-links {
+  margin-top: 20px;
+  display: flex;
+  gap: 16px;
+}
+
+.social-links a {
+  color: #aaa;
+  font-size: 20px;
+  transition: color 0.3s, transform 0.3s;
+  display: inline-flex;
+  align-items: center;
+}
+
+.social-links a:hover {
+  color: #2A52BE;
+  transform: translateY(-3px);
+}
+
+.footer-links h3,
+.footer-contact h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 18px;
+  letter-spacing: 0.5px;
+}
+
+.footer-links ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links ul li {
+  margin-bottom: 12px;
+}
+
+.footer-links a {
+  color: #aaa;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.3s, padding-left 0.3s;
+  display: inline-block;
+}
+
+.footer-links a:hover {
+  color: #2A52BE;
+  padding-left: 6px;
+}
+
+.footer-contact p {
+  color: #aaa;
+  font-size: 14px;
+  line-height: 1.8;
+  margin: 0 0 8px;
+}
+
+.footer-contact a {
+  color: #aaa;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.footer-contact a:hover {
+  color: #2A52BE;
+}
+
+.footer-bottom {
+  text-align: center;
+  border-top: 1px solid #2a2a2a;
+  padding-top: 20px;
+  font-size: 13px;
+  color: #555;
+}
+
+@media (max-width: 900px) {
+  .footer-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+  }
+
+  .footer-brand {
+    grid-column: 1 / -1; 
+  }
+
+  .footer-brand p {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .main-footer {
+    padding: 50px 6% 20px;
+  }
+
+  .footer-container {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    margin-bottom: 36px;
+  }
+
+  .footer-brand {
+    grid-column: auto;
+    text-align: center;
+  }
+
+  .footer-brand p {
+    max-width: 100%;
+  }
+
+  .social-links {
+    justify-content: center;
+  }
+
+  .footer-links,
+  .footer-contact {
+    text-align: center;
+  }
+
+  .footer-links a:hover {
+    padding-left: 0; 
+  }
+}

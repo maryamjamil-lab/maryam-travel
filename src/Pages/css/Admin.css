@@ -1,0 +1,68 @@
+.admin-container {
+  padding: 100px 5%;
+  background: #f8f9fa;
+   min-height: 100vh; 
+}
+.admin-section { 
+  margin-bottom: 50px; 
+  background: white;
+  padding: 20px; 
+  border-radius: 12px; 
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05); 
+}
+h1 span {
+  color: #007bff; 
+}
+table {
+ width: 100%; 
+ border-collapse: collapse; 
+ margin-top: 20px; 
+}
+th, td { 
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+th { 
+  background: #f4f7fe; 
+  color: #333;
+}
+.msg-card { 
+  border-left: 4px solid #007bff;
+  background: #f9f9f9; 
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+}
+.delete-btn {
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.delete-btn:hover {
+  background: #cc0000;
+}
+
+.msg-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.delete-icon-btn {
+  background: none;
+  border: none;
+  color: #ff4d4d;
+  font-size: 24px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.delete-icon-btn:hover {
+  color: #cc0000;
+}
