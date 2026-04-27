@@ -20,19 +20,17 @@ export default function Header() {
     return unsub;
   }, []);
 
-  // Lock body scroll when modal OR drawer is open
+  // Lock body scroll when drawer or modal is open
   useEffect(() => {
-    if (showModal || menuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    document.body.style.overflow = (showModal || menuOpen) ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [showModal, menuOpen]);
 
-  // ESC closes modal
+  // ESC closes everything
   useEffect(() => {
-    const onKey = (e) => { if (e.key === 'Escape') { setShowModal(false); setMenuOpen(false); } };
+    const onKey = (e) => {
+      if (e.key === 'Escape') { setShowModal(false); setMenuOpen(false); }
+    };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
@@ -51,10 +49,10 @@ export default function Header() {
     let newErrors = {};
     if (isSignUp && !formData.name.trim()) newErrors.name = "Name is required";
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email)                          newErrors.email    = "Email is required";
-    else if (!emailPattern.test(formData.email))  newErrors.email    = "Please enter a valid email address";
-    if (!formData.password)                        newErrors.password = "Password is required";
-    else if (formData.password.length < 6)         newErrors.password = "Password must be at least 6 characters";
+    if (!formData.email)                         newErrors.email    = "Email is required";
+    else if (!emailPattern.test(formData.email)) newErrors.email    = "Please enter a valid email address";
+    if (!formData.password)                       newErrors.password = "Password is required";
+    else if (formData.password.length < 6)        newErrors.password = "Password must be at least 6 characters";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -67,8 +65,10 @@ export default function Header() {
       if (isSignUp) {
         const { user } = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
         await setDoc(doc(db, "users", user.uid), {
-          fullName: formData.name, email: formData.email,
-          uid: user.uid, createdAt: new Date().toISOString()
+          fullName: formData.name,
+          email: formData.email,
+          uid: user.uid,
+          createdAt: new Date().toISOString()
         });
         alert("Account Created Successfully!");
       } else {
@@ -83,20 +83,31 @@ export default function Header() {
   };
 
   const handleLogout = () => { signOut(auth); alert("Logged Out!"); };
+  const closeMenu    = () => setMenuOpen(false);
+
+  const NAV_LINKS = [
+    { to: '/',            label: 'Home' },
+    { to: '/destination', label: 'Destination' },
+    { to: '/tour/1',      label: 'Tour Packages' },
+    { to: '/about',       label: 'About' },
+    { to: '/review',      label: 'Reviews' },
+    { to: '/contact',     label: 'Contact' },
+  ];
 
   return (
     <>
       {/* ── Sticky nav bar ── */}
       <div className="box-shadow">
         <nav className="nav-bar">
+          {/* Logo */}
           <div className="logo-div">
             <img src={logo} alt="TravelWorld logo" />
           </div>
 
-          {/* Hamburger — 3 bars, no typo */}
+          {/* Hamburger — visible on mobile only via CSS */}
           <button
             className={`menu-toggle ${menuOpen ? 'active' : ''}`}
-            onClick={() => setMenuOpen(!menuOpen)}
+            onClick={() => setMenuOpen(prev => !prev)}
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={menuOpen}
           >
@@ -108,12 +119,9 @@ export default function Header() {
           {/* Desktop nav links */}
           <div className="center">
             <ul>
-              <li><Link to="/">Home</Link></li>
-              <li><Link to="/destination">Destination</Link></li>
-              <li><Link to="/tour/1">Tour Packages</Link></li>
-              <li><Link to="/about">About</Link></li>
-              <li><Link to="/review">Reviews</Link></li>
-              <li><Link to="/contact">Contact</Link></li>
+              {NAV_LINKS.map(({ to, label }) => (
+                <li key={to}><Link to={to}>{label}</Link></li>
+              ))}
             </ul>
           </div>
 
@@ -131,32 +139,43 @@ export default function Header() {
         </nav>
       </div>
 
-      {/* ── Mobile drawer — rendered as its own fixed layer ── */}
+      {/* ── Mobile drawer — completely outside the nav DOM tree ── */}
       {menuOpen && (
         <>
-          {/* Backdrop */}
-          <div className="drawer-backdrop" onClick={() => setMenuOpen(false)} aria-hidden="true" />
+          {/* Clickable backdrop dims and closes */}
+          <div
+            className="drawer-backdrop"
+            onClick={closeMenu}
+            aria-hidden="true"
+          />
 
           {/* Drawer panel */}
           <nav className="mobile-drawer" aria-label="Mobile navigation">
+
+            {/* ✕ close button inside the drawer, top-right */}
+            <button
+              className="drawer-close"
+              onClick={closeMenu}
+              aria-label="Close menu"
+            >
+              &#x2715;
+            </button>
+
+            {/* Nav links */}
             <ul>
-              {[
-                { to: '/',            label: 'Home' },
-                { to: '/destination', label: 'Destination' },
-                { to: '/tour/1',      label: 'Tour Packages' },
-                { to: '/about',       label: 'About' },
-                { to: '/review',      label: 'Reviews' },
-                { to: '/contact',     label: 'Contact' },
-              ].map(({ to, label }) => (
+              {NAV_LINKS.map(({ to, label }) => (
                 <li key={to}>
-                  <Link to={to} onClick={() => setMenuOpen(false)}>{label}</Link>
+                  <Link to={to} onClick={closeMenu}>{label}</Link>
                 </li>
               ))}
             </ul>
 
+            {/* Auth buttons at the bottom */}
             <div className="drawer-buttons">
               {currentUser ? (
-                <button className="btnlog" onClick={() => { handleLogout(); setMenuOpen(false); }}>Log Out</button>
+                <button className="btnlog" onClick={() => { handleLogout(); closeMenu(); }}>
+                  Log Out
+                </button>
               ) : (
                 <>
                   <button className="btnsign" onClick={() => toggleModal('signup')}>Sign Up</button>
@@ -168,6 +187,7 @@ export default function Header() {
         </>
       )}
 
+      {/* ── Modal ── */}
       {showModal && (
         <div
           className="modal-overlay"
@@ -177,45 +197,66 @@ export default function Header() {
           aria-label={isSignUp ? 'Sign up' : 'Log in'}
         >
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="close-btn" onClick={() => setShowModal(false)} aria-label="Close">&times;</button>
+            <button
+              className="close-btn"
+              onClick={() => setShowModal(false)}
+              aria-label="Close"
+            >
+              &#x2715;
+            </button>
+
             <div className="form-container">
               <h2>{isSignUp ? 'Join Us' : 'Welcome Back'}</h2>
               <p>Experience the world with TravelWorld</p>
+
               <form onSubmit={handleSubmit} noValidate>
                 {isSignUp && (
                   <div className="input-group">
                     <input
-                      type="text" name="name" placeholder="Full Name"
+                      type="text"
+                      name="name"
+                      placeholder="Full Name"
                       className={errors.name ? 'input-error' : ''}
-                      value={formData.name} onChange={handleInputChange}
+                      value={formData.name}
+                      onChange={handleInputChange}
                     />
                     {errors.name && <span className="error-text">{errors.name}</span>}
                   </div>
                 )}
+
                 <div className="input-group">
                   <input
-                    type="email" name="email" placeholder="Email Address"
+                    type="email"
+                    name="email"
+                    placeholder="Email Address"
                     className={errors.email ? 'input-error' : ''}
-                    value={formData.email} onChange={handleInputChange}
+                    value={formData.email}
+                    onChange={handleInputChange}
                   />
                   {errors.email && <span className="error-text">{errors.email}</span>}
                 </div>
+
                 <div className="input-group">
                   <input
-                    type="password" name="password" placeholder="Password"
+                    type="password"
+                    name="password"
+                    placeholder="Password"
                     className={errors.password ? 'input-error' : ''}
-                    value={formData.password} onChange={handleInputChange}
+                    value={formData.password}
+                    onChange={handleInputChange}
                   />
                   {errors.password && <span className="error-text">{errors.password}</span>}
                 </div>
+
                 <button type="submit" className="form-submit-btn">
                   {isSignUp ? 'Create Account' : 'Login'}
                 </button>
               </form>
+
               <div className="form-footer">
                 <p>
                   {isSignUp ? "Already a member?" : "New to TravelWorld?"}
-                  <span onClick={() => { setIsSignUp(!isSignUp); setErrors({}); }}>
+                  <span onClick={() => { setIsSignUp(v => !v); setErrors({}); }}>
                     {isSignUp ? " Login" : " Sign Up"}
                   </span>
                 </p>
